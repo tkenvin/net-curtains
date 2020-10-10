@@ -1,9 +1,4 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using System;
 using System.Linq;
 
 namespace curtains
@@ -12,12 +7,8 @@ namespace curtains
     {
         static void Main(string[] args)
         {
-            var userInput = new XkcdColour
-            {
-                Value = args[0]
-            };
-            var colourNames = ReadCsvInput(".\\rgb.txt");
-            var allOptions = colourNames
+            var userInput = args[0];
+            var allOptions = XkcdColour.AllColours
                 .Select(xc => new
                 {
                     Proximity = xc.Proximity(userInput),
@@ -32,29 +23,6 @@ namespace curtains
             {
                 Console.WriteLine($"{option.Name} {option.Value}");
             }
-        }
-
-        static IEnumerable<XkcdColour> ReadCsvInput(string filename)
-        {
-            var xkcdColours = new List<XkcdColour>();
-            var config = new CsvConfiguration(CultureInfo.CurrentCulture)
-            {
-                HeaderValidated = null,
-                MissingFieldFound = null,
-                IgnoreBlankLines = true,
-                Delimiter = "\t"
-            };
-            using (var textReader = new StreamReader(filename))
-            using (var csvReader = new CsvReader(textReader, config))
-            {
-                var moreRecords = csvReader.Read();
-                while (moreRecords)
-                {
-                    xkcdColours.Add(csvReader.GetRecord<XkcdColour>());
-                    moreRecords = csvReader.Read();
-                }
-            }
-            return xkcdColours;
         }
     }
 }
